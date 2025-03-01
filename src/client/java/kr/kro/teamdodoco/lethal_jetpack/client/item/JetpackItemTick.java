@@ -5,6 +5,7 @@ import kr.kro.teamdodoco.lethal_jetpack.client.IClientPlayerJetpack;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.network.ClientPlayerEntity;
+import net.minecraft.client.render.RenderTickCounter;
 import org.joml.Quaternionf;
 
 public final class JetpackItemTick
@@ -93,8 +94,8 @@ public final class JetpackItemTick
         }
     }
 
-    public static void onHudRender(DrawContext context, float tickDelta)
+    public static void onHudRender(DrawContext context, RenderTickCounter delta)
     {
-
+        
     }
 }

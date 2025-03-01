@@ -12,7 +12,7 @@ public final class ModSounds
 
     public static SoundEvent register(String id)
     {
-        Identifier soundEventID = new Identifier(LethalJetpack.MOD_ID, id);
+        Identifier soundEventID = Identifier.of(LethalJetpack.MOD_ID, id);
         return Registry.register(Registries.SOUND_EVENT, soundEventID, SoundEvent.of(soundEventID));
     }
 

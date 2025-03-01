@@ -1,6 +1,5 @@
 package kr.kro.teamdodoco.lethal_jetpack.client.mixin;
 
-import kr.kro.teamdodoco.lethal_jetpack.Debug;
 import kr.kro.teamdodoco.lethal_jetpack.IPlayerJetpack;
 import kr.kro.teamdodoco.lethal_jetpack.ModSounds;
 import kr.kro.teamdodoco.lethal_jetpack.client.ICameraJetpack;

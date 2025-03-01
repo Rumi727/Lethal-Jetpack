@@ -1,60 +1,71 @@
 package kr.kro.teamdodoco.lethal_jetpack.network;
 
 import kr.kro.teamdodoco.lethal_jetpack.IPlayerJetpack;
-import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
+import kr.kro.teamdodoco.lethal_jetpack.network.jetpack.*;
+import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.network.PacketByteBuf;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.Vec3d;
 import org.joml.Quaternionf;
-import org.joml.Vector3d;
 
 public final class JetpackPackets
 {
-    static final Identifier JETPACK_ACCELERATION_START_CHANNEL = new Identifier("lethal_jetpack", "jetpack_acceleration_start");
-    static final Identifier JETPACK_ACCELERATION_END_CHANNEL = new Identifier("lethal_jetpack", "jetpack_acceleration_end");
-    static final Identifier JETPACK_USING_CHANNEL = new Identifier("lethal_jetpack", "jetpack_using");
-    static final Identifier JETPACK_VELOCITY_CHANNEL = new Identifier("lethal_jetpack", "jetpack_velocity");
-    static final Identifier JETPACK_ROTATION_CHANNEL = new Identifier("lethal_jetpack", "jetpack_rotation");
-
-
-
     public static void Register()
     {
-        ServerPlayNetworking.registerGlobalReceiver(JETPACK_ACCELERATION_START_CHANNEL, (server, player, handler, buf, responseSender) ->
+        PayloadTypeRegistry.playC2S().register(JetpackUpdateMotionPayload.ID, JetpackUpdateMotionPayload.CODEC);
+
+        PayloadTypeRegistry.playC2S().register(JetpackAccelerationStart.ID, JetpackAccelerationStart.CODEC);
+        PayloadTypeRegistry.playC2S().register(JetpackAccelerationEnd.ID, JetpackAccelerationEnd.CODEC);
+        PayloadTypeRegistry.playC2S().register(JetpackUsingPayload.ID, JetpackUsingPayload.CODEC);
+        PayloadTypeRegistry.playC2S().register(JetpackVelocityPayload.ID, JetpackVelocityPayload.CODEC);
+        PayloadTypeRegistry.playC2S().register(JetpackRotationPayload.ID, JetpackRotationPayload.CODEC);
+
+        PayloadTypeRegistry.playS2C().register(JetpackAccelerationStart.ID, JetpackAccelerationStart.CODEC);
+        PayloadTypeRegistry.playS2C().register(JetpackAccelerationEnd.ID, JetpackAccelerationEnd.CODEC);
+        PayloadTypeRegistry.playS2C().register(JetpackUsingPayload.ID, JetpackUsingPayload.CODEC);
+        PayloadTypeRegistry.playS2C().register(JetpackVelocityPayload.ID, JetpackVelocityPayload.CODEC);
+        PayloadTypeRegistry.playS2C().register(JetpackRotationPayload.ID, JetpackRotationPayload.CODEC);
+
+        ServerPlayNetworking.registerGlobalReceiver(JetpackUpdateMotionPayload.ID, (payload, context) ->
         {
-            AccelerationStart(player);
+            ServerPlayerEntity player = context.player();
+            if (((IPlayerJetpack)player).getJetpackUsing())
+            {
+                player.setVelocity(payload.motion());
+                player.fallDistance = 0;
+            }
         });
 
-        ServerPlayNetworking.registerGlobalReceiver(JETPACK_ACCELERATION_END_CHANNEL, (server, player, handler, buf, responseSender) ->
-        {
-            AccelerationEnd(player);
-        });
+        ServerPlayNetworking.registerGlobalReceiver(JetpackAccelerationStart.ID, (payload, context) ->
+                AccelerationStart(context.player()));
 
-        ServerPlayNetworking.registerGlobalReceiver(JETPACK_USING_CHANNEL, (server, player, handler, buf, responseSender) ->
+        ServerPlayNetworking.registerGlobalReceiver(JetpackAccelerationEnd.ID, (payload, context) ->
+                AccelerationEnd(context.player()));
+
+        ServerPlayNetworking.registerGlobalReceiver(JetpackUsingPayload.ID, (payload, context) ->
         {
-            boolean using = buf.readBoolean();
+            ServerPlayerEntity player = context.player();
+            boolean using = payload.using();
 
             ((IPlayerJetpack)player).setJetpackUsing(using);
             Using(player, using);
         });
 
-        ServerPlayNetworking.registerGlobalReceiver(JETPACK_VELOCITY_CHANNEL, (server, player, handler, buf, responseSender) ->
+        ServerPlayNetworking.registerGlobalReceiver(JetpackVelocityPayload.ID, (payload, context) ->
         {
-            double velocity = buf.readDouble();
+            ServerPlayerEntity player = context.player();
+            double velocity = payload.velocity();
 
-            ((IPlayerJetpack) player).setJetpackVelocity(velocity);
+            ((IPlayerJetpack)player).setJetpackVelocity(velocity);
             Velocity(player, velocity);
         });
 
-        ServerPlayNetworking.registerGlobalReceiver(JETPACK_ROTATION_CHANNEL, (server, player, handler, buf, responseSender) ->
+        ServerPlayNetworking.registerGlobalReceiver(JetpackRotationPayload.ID, (payload, context) ->
         {
-            Quaternionf rotation = new Quaternionf(buf.readFloat(), buf.readFloat(), buf.readFloat(), buf.readFloat());
+            ServerPlayerEntity player = context.player();
+            Quaternionf rotation = payload.rotation();
 
-            ((IPlayerJetpack) player).setJetpackRotation(rotation);
+            ((IPlayerJetpack)player).setJetpackRotation(rotation);
             Rotation(player, rotation);
         });
     }
@@ -63,68 +74,46 @@ public final class JetpackPackets
 
     public static void AccelerationStart(ServerPlayerEntity executioner)
     {
-        PacketByteBuf buf = PacketByteBufs.create();
-        buf.writeUuid(executioner.getUuid());
-
         for (PlayerEntity player : executioner.getWorld().getPlayers())
         {
             if (player != executioner && player instanceof ServerPlayerEntity serverPlayer)
-                ServerPlayNetworking.send(serverPlayer, JETPACK_ACCELERATION_START_CHANNEL, buf);
+                ServerPlayNetworking.send(serverPlayer, new JetpackAccelerationStart(executioner.getUuid()));
         }
     }
 
     public static void AccelerationEnd(ServerPlayerEntity executioner)
     {
-        PacketByteBuf buf = PacketByteBufs.create();
-        buf.writeUuid(executioner.getUuid());
-
         for (PlayerEntity player : executioner.getWorld().getPlayers())
         {
             if (player != executioner && player instanceof ServerPlayerEntity serverPlayer)
-                ServerPlayNetworking.send(serverPlayer, JETPACK_ACCELERATION_END_CHANNEL, buf);
+                ServerPlayNetworking.send(serverPlayer, new JetpackAccelerationEnd(executioner.getUuid()));
         }
     }
 
     public static void Using(ServerPlayerEntity executioner, boolean using)
     {
-        PacketByteBuf buf = PacketByteBufs.create();
-        buf.writeUuid(executioner.getUuid());
-        buf.writeBoolean(using);
-
         for (PlayerEntity player : executioner.getWorld().getPlayers())
         {
             if (player != executioner && player instanceof ServerPlayerEntity serverPlayer)
-                ServerPlayNetworking.send(serverPlayer, JETPACK_USING_CHANNEL, buf);
+                ServerPlayNetworking.send(serverPlayer, new JetpackUsingPayload(executioner.getUuid(), using));
         }
     }
 
     public static void Velocity(ServerPlayerEntity executioner, double velocity)
     {
-        PacketByteBuf buf = PacketByteBufs.create();
-        buf.writeUuid(executioner.getUuid());
-        buf.writeDouble(velocity);
-
         for (PlayerEntity player : executioner.getWorld().getPlayers())
         {
             if (player != executioner && player instanceof ServerPlayerEntity serverPlayer)
-                ServerPlayNetworking.send(serverPlayer, JETPACK_VELOCITY_CHANNEL, buf);
+                ServerPlayNetworking.send(serverPlayer, new JetpackVelocityPayload(executioner.getUuid(), velocity));
         }
     }
 
     public static void Rotation(ServerPlayerEntity executioner, Quaternionf rotation)
     {
-        PacketByteBuf buf = PacketByteBufs.create();
-        buf.writeUuid(executioner.getUuid());
-
-        buf.writeFloat(rotation.x);
-        buf.writeFloat(rotation.y);
-        buf.writeFloat(rotation.z);
-        buf.writeFloat(rotation.w);
-
         for (PlayerEntity player : executioner.getWorld().getPlayers())
         {
             if (player != executioner && player instanceof ServerPlayerEntity serverPlayer)
-                ServerPlayNetworking.send(serverPlayer, JETPACK_ROTATION_CHANNEL, buf);
+                ServerPlayNetworking.send(serverPlayer, new JetpackRotationPayload(executioner.getUuid(), rotation));
         }
     }
 }

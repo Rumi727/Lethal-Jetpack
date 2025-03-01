@@ -32,14 +32,17 @@ public abstract class JetpackCameraMixin implements ICameraJetpack
 
     @Shadow private Vec3d pos;
 
-    @Shadow protected abstract void moveBy(double x, double y, double z);
+    @Shadow protected abstract void moveBy(float x, float y, float z);
 
     @Shadow private float pitch;
     @Shadow private BlockView area;
     @Shadow private Entity focusedEntity;
 
-    @Shadow protected abstract double clipToSpace(double desiredCameraDistance);
+    @Shadow protected abstract float clipToSpace(float desiredCameraDistance);
 
+    @Shadow @Final private static Vector3f HORIZONTAL;
+    @Shadow @Final private static Vector3f VERTICAL;
+    @Shadow @Final private static Vector3f DIAGONAL;
     @Unique boolean using = false;
 
     @Unique Quaternionf lerpRotation = new Quaternionf();
@@ -83,8 +86,8 @@ public abstract class JetpackCameraMixin implements ICameraJetpack
             waveMul = 0;
     }
 
-    @Redirect(method = "update", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/Camera;moveBy(DDD)V"))
-    void updateMoveBy(Camera instance, double x, double y, double z)
+    @Redirect(method = "update", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/Camera;moveBy(FFF)V"))
+    void updateMoveBy(Camera instance, float x, float y, float z)
     {
         Vec3d pos = this.pos;
         Vec3d dir = getCalculateCameraPos(z, y, x);
@@ -94,8 +97,8 @@ public abstract class JetpackCameraMixin implements ICameraJetpack
         setPos(this.pos.lerp(new Vec3d(pos.x + dir.x, pos.y + dir.y, pos.z + dir.z), lerp));
     }
 
-    @Redirect(method = "update", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/Camera;clipToSpace(D)D"))
-    double updateClipToSpace(Camera instance, double desiredCameraDistance)
+    @Redirect(method = "update", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/Camera;clipToSpace(F)F"))
+    float updateClipToSpace(Camera instance, float desiredCameraDistance)
     {
         return MathHelper.lerp(lerp, clipToSpace(desiredCameraDistance), desiredCameraDistance);
     }
@@ -119,10 +122,10 @@ public abstract class JetpackCameraMixin implements ICameraJetpack
     @Inject(method = "update", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/Camera;setRotation(FF)V", ordinal = 0, shift = At.Shift.AFTER))
     void updateRotation(BlockView area, Entity focusedEntity, boolean thirdPerson, boolean inverseView, float tickDelta, CallbackInfo ci)
     {
-        this.rotation.mul(lerpRotation);
+        this.rotation.slerp(lerpRotation, lerp);
 
-        this.horizontalPlane.set(0.0F, 0.0F, 1.0F).rotate(this.rotation);
-        this.verticalPlane.set(0.0F, 1.0F, 0.0F).rotate(this.rotation);
-        this.diagonalPlane.set(1.0F, 0.0F, 0.0F).rotate(this.rotation);
+        HORIZONTAL.rotate(this.rotation, this.horizontalPlane);
+        VERTICAL.rotate(this.rotation, this.verticalPlane);
+        DIAGONAL.rotate(this.rotation, this.diagonalPlane);
     }
 }

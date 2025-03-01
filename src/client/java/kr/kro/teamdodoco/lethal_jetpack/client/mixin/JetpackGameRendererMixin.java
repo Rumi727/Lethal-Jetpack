@@ -6,9 +6,11 @@ import kr.kro.teamdodoco.lethal_jetpack.client.LethalJetpackClient;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.GameRenderer;
+import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.random.Random;
+import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -16,6 +18,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
@@ -32,8 +35,8 @@ public abstract class JetpackGameRendererMixin
 
     @Unique Random waveRandom = Random.create();
 
-    @Inject(method = "renderWorld", at = @At("HEAD"))
-    void renderWorld(float tickDelta, long limitTime, MatrixStack matrices, CallbackInfo info)
+    @ModifyVariable(method = "renderWorld", at = @At(value = "STORE"))
+    Matrix4f renderWorld(Matrix4f matrices)
     {
         Quaternionf rotation = new Quaternionf();
         boolean using = false;
@@ -67,19 +70,21 @@ public abstract class JetpackGameRendererMixin
         if (using)
         {
             lerp = 0;
-            matrices.multiply(lerpRotation.rotateLocalY(offsetYaw, new Quaternionf()).rotateLocalX(headPitch));
+            matrices.rotate(lerpRotation.rotateLocalY(offsetYaw, new Quaternionf()).rotateLocalX(headPitch));
         }
         else
         {
             lerp = MathHelper.lerp(8 * LethalJetpackClient.deltaTime, lerp, 1);
             if (lerp < 0.9995f)
-                matrices.multiply(lerpRotation.rotateLocalY(offsetYaw * (1 - lerp), new Quaternionf()).rotateLocalX(headPitch * (1 - lerp)));
+                matrices.rotate(lerpRotation.rotateLocalY(offsetYaw * (1 - lerp), new Quaternionf()).rotateLocalX(headPitch * (1 - lerp)));
         }
+
+        return matrices;
     }
 
-    @Redirect(method = "renderWorld", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/Camera;getPitch()F"))
+    /*@Redirect(method = "renderWorld", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/Camera;getPitch()F"))
     float getPitch(Camera instance) { return instance.getPitch() * lerp; }
 
     @Redirect(method = "renderWorld", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/Camera;getYaw()F"))
-    float getYaw(Camera instance) { return instance.getYaw() * lerp; }
+    float getYaw(Camera instance) { return instance.getYaw() * lerp; }*/
 }

@@ -1,9 +1,10 @@
 package kr.kro.teamdodoco.lethal_jetpack;
 
 import kr.kro.teamdodoco.lethal_jetpack.network.JetpackPackets;
-import kr.kro.teamdodoco.lethal_jetpack.network.Packets;
+import kr.kro.teamdodoco.lethal_jetpack.network.jetpack.JetpackUpdateMotionPayload;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
+import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.minecraft.item.ItemGroups;
 
 public final class LethalJetpack implements ModInitializer
@@ -13,6 +14,8 @@ public final class LethalJetpack implements ModInitializer
     @Override
     public void onInitialize()
     {
+        PayloadTypeRegistry.playS2C().register(JetpackUpdateMotionPayload.ID, JetpackUpdateMotionPayload.CODEC);
+
         Debug.log("Items Register...");
         ModItems.initialize();
 
@@ -24,6 +27,5 @@ public final class LethalJetpack implements ModInitializer
 
         Debug.log("Packet Register...");
         JetpackPackets.Register();
-        Packets.Register();
     }
 }

@@ -1,6 +1,5 @@
 package kr.kro.teamdodoco.lethal_jetpack.mixin;
 
-import kr.kro.teamdodoco.lethal_jetpack.Debug;
 import kr.kro.teamdodoco.lethal_jetpack.IPlayerJetpack;
 import net.minecraft.entity.player.PlayerEntity;
 import org.joml.Quaternionf;
@@ -10,11 +9,6 @@ import org.spongepowered.asm.mixin.Unique;
 @Mixin(PlayerEntity.class)
 public abstract class JetpackPlayerEntityMixin implements IPlayerJetpack
 {
-    public void onRender()
-    {
-
-    }
-
     public void onAccelerationStart() { }
 
     public void onAccelerationEnd() { }

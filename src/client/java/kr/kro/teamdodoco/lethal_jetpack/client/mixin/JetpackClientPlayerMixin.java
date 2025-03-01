@@ -4,7 +4,6 @@ import kr.kro.teamdodoco.lethal_jetpack.Debug;
 import kr.kro.teamdodoco.lethal_jetpack.MathUtility;
 import kr.kro.teamdodoco.lethal_jetpack.client.IClientPlayerJetpack;
 import kr.kro.teamdodoco.lethal_jetpack.client.network.JetpackPackets;
-import kr.kro.teamdodoco.lethal_jetpack.client.network.Packets;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.util.math.MathHelper;
@@ -23,33 +22,31 @@ public abstract class JetpackClientPlayerMixin implements IClientPlayerJetpack
 {
     @Shadow @Final protected MinecraftClient client;
 
-    @Shadow protected abstract boolean isCamera();
-
     @Unique float gravityValue = 0.8f;
 
     @Unique double xSpeed = 0;
     @Unique double ySpeed = 0;
     @Unique double zSpeed = 0;
 
+    @Unique public ClientPlayerEntity getThis() { return (ClientPlayerEntity)(Object)this; }
+
     @ModifyVariable(method = "move", at = @At("HEAD"), argsOnly = true)
     Vec3d move(Vec3d movement)
     {
         if (using)
         {
-            ClientPlayerEntity player = (ClientPlayerEntity)(Object)this;
+            ClientPlayerEntity player = getThis();
             Vector3d accelerationVelocity = rotation.transformInverse(0, velocity, 0, new Vector3d());
 
             xSpeed = MathHelper.lerp(0.05, xSpeed, -accelerationVelocity.x);
             ySpeed = MathHelper.lerp(0.05, ySpeed, accelerationVelocity.y);
             zSpeed = MathHelper.lerp(0.05, zSpeed, -accelerationVelocity.z);
 
-            Debug.log(gravityValue);
-
             movement = new Vec3d(xSpeed, ySpeed - gravityValue, zSpeed);
             player.fallDistance = 0;
 
             player.setVelocity(movement);
-            Packets.UpdateMotion(movement);
+            JetpackPackets.updateMotion(getThis(), movement);
         }
 
         return movement;
@@ -67,12 +64,12 @@ public abstract class JetpackClientPlayerMixin implements IClientPlayerJetpack
             if (acceleration)
             {
                 onAccelerationStart();
-                JetpackPackets.AccelerationStart();
+                JetpackPackets.accelerationStart(getThis());
             }
             else
             {
                 onAccelerationEnd();
-                JetpackPackets.AccelerationEnd();
+                JetpackPackets.accelerationEnd(getThis());
             }
         }
 
@@ -86,9 +83,9 @@ public abstract class JetpackClientPlayerMixin implements IClientPlayerJetpack
     public void setJetpackUsing(boolean using)
     {
         this.using = using;
-        JetpackPackets.Using(using);
+        JetpackPackets.using(getThis(), using);
 
-        ClientPlayerEntity player = (ClientPlayerEntity)(Object)this;
+        ClientPlayerEntity player = getThis();
         if (using)
         {
             Vec3d velocity = player.getVelocity();
@@ -118,7 +115,7 @@ public abstract class JetpackClientPlayerMixin implements IClientPlayerJetpack
     public void setJetpackVelocity(double velocity)
     {
         this.velocity = velocity;
-        JetpackPackets.Velocity(velocity);
+        JetpackPackets.velocity(getThis(), velocity);
     }
 
     @Unique
@@ -128,6 +125,6 @@ public abstract class JetpackClientPlayerMixin implements IClientPlayerJetpack
     public void setJetpackRotation(Quaternionf rotation)
     {
         this.rotation = rotation;
-        JetpackPackets.Rotation(rotation);
+        JetpackPackets.rotation(getThis(), rotation);
     }
 }

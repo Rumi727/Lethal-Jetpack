@@ -1,0 +1,17 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "kr.kro.teamdodoco.lethal_jetpack.client.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "client": [
+    "JetpackCameraMixin",
+    "JetpackClientPlayerMixin",
+    "JetpackGameRendererMixin",
+    "JetpackMouseMixin",
+    "JetpackLivingEntityRendererMixin",
+    "JetpackPlayerMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

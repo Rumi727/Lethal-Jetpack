@@ -1,0 +1,51 @@
+{
+  "jetpack.use":
+  {
+    "sounds": 
+    [
+      {
+        "name": "lethal_jetpack:jetpack/use"
+      }
+    ],
+    "subtitle": "subtitle.lethal_jetpack.jetpack.use"
+  },
+  "jetpack.idle":
+  {
+    "sounds":
+    [
+      {
+        "name": "lethal_jetpack:jetpack/idle"
+      }
+    ]
+  },
+  "jetpack.warning":
+  {
+    "sounds": 
+    [
+      {
+        "name": "lethal_jetpack:jetpack/warning"
+      }
+    ],
+    "subtitle": "subtitle.lethal_jetpack.jetpack.warning"
+  },
+  "jetpack.battery_warning":
+  {
+    "sounds":
+    [
+      {
+        "name": "lethal_jetpack:jetpack/battery_warning"
+      }
+    ],
+    "subtitle": "subtitle.lethal_jetpack.jetpack.battery_warning"
+  },
+  "jetpack.explosion":
+  {
+    "sounds":
+    [
+      {
+        "name": "lethal_jetpack:jetpack/explosion"
+      }
+    ],
+    "subtitle": "subtitle.lethal_jetpack.jetpack.explosion"
+  }
+}

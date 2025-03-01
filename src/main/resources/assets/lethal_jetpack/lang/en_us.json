@@ -1,0 +1,6 @@
+{
+    "subtitle.lethal_jetpack.jetpack.use":"Jetpack works",
+    "subtitle.lethal_jetpack.jetpack.warning":"Jetpack warns",
+    "subtitle.lethal_jetpack.jetpack.battery_warning":"Jetpack battery is low",
+    "subtitle.lethal_jetpack.jetpack.explosion": "Jetpack explodes"
+}

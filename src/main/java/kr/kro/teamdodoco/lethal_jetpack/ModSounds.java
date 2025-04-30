@@ -20,4 +20,11 @@ public final class ModSounds
     public static final SoundEvent JETPACK_IDLE = register("jetpack.idle");
     public static final SoundEvent JETPACK_WARNING = register("jetpack.warning");
     public static final SoundEvent JETPACK_BATTERY_WARNING = register("jetpack.battery_warning");
+    public static final SoundEvent JETPACK_EXPLOSION = register("jetpack.explosion");
+
+    public static final SoundEvent JETPACK_USE_MONO = register("jetpack.use_mono");
+    public static final SoundEvent JETPACK_IDLE_MONO = register("jetpack.idle_mono");
+    public static final SoundEvent JETPACK_WARNING_MONO = register("jetpack.warning_mono");
+    public static final SoundEvent JETPACK_BATTERY_WARNING_MONO = register("jetpack.battery_warning_mono");
+    public static final SoundEvent JETPACK_EXPLOSION_MONO = register("jetpack.explosion_mono");
 }

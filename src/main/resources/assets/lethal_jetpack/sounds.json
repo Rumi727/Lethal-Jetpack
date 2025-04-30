@@ -4,7 +4,8 @@
     "sounds": 
     [
       {
-        "name": "lethal_jetpack:jetpack/use"
+        "name": "lethal_jetpack:jetpack/use",
+        "attenuation_distance": 32
       }
     ],
     "subtitle": "subtitle.lethal_jetpack.jetpack.use"
@@ -14,7 +15,8 @@
     "sounds":
     [
       {
-        "name": "lethal_jetpack:jetpack/idle"
+        "name": "lethal_jetpack:jetpack/idle",
+        "attenuation_distance": 32
       }
     ]
   },
@@ -23,7 +25,8 @@
     "sounds": 
     [
       {
-        "name": "lethal_jetpack:jetpack/warning"
+        "name": "lethal_jetpack:jetpack/warning",
+        "attenuation_distance": 16
       }
     ],
     "subtitle": "subtitle.lethal_jetpack.jetpack.warning"
@@ -33,7 +36,8 @@
     "sounds":
     [
       {
-        "name": "lethal_jetpack:jetpack/battery_warning"
+        "name": "lethal_jetpack:jetpack/battery_warning",
+        "attenuation_distance": 16
       }
     ],
     "subtitle": "subtitle.lethal_jetpack.jetpack.battery_warning"
@@ -43,7 +47,62 @@
     "sounds":
     [
       {
-        "name": "lethal_jetpack:jetpack/explosion"
+        "name": "lethal_jetpack:jetpack/explosion",
+        "attenuation_distance": 32
+      }
+    ],
+    "subtitle": "subtitle.lethal_jetpack.jetpack.explosion"
+  },
+  "jetpack.use_mono":
+  {
+    "sounds":
+    [
+      {
+        "name": "lethal_jetpack:jetpack/use_mono",
+        "attenuation_distance": 32
+      }
+    ],
+    "subtitle": "subtitle.lethal_jetpack.jetpack.use"
+  },
+  "jetpack.idle_mono":
+  {
+    "sounds":
+    [
+      {
+        "name": "lethal_jetpack:jetpack/idle_mono",
+        "attenuation_distance": 32
+      }
+    ]
+  },
+  "jetpack.warning_mono":
+  {
+    "sounds":
+    [
+      {
+        "name": "lethal_jetpack:jetpack/warning_mono",
+        "attenuation_distance": 16
+      }
+    ],
+    "subtitle": "subtitle.lethal_jetpack.jetpack.warning"
+  },
+  "jetpack.battery_warning_mono":
+  {
+    "sounds":
+    [
+      {
+        "name": "lethal_jetpack:jetpack/battery_warning_mono",
+        "attenuation_distance": 16
+      }
+    ],
+    "subtitle": "subtitle.lethal_jetpack.jetpack.battery_warning"
+  },
+  "jetpack.explosion_mono":
+  {
+    "sounds":
+    [
+      {
+        "name": "lethal_jetpack:jetpack/explosion_mono",
+        "attenuation_distance": 32
       }
     ],
     "subtitle": "subtitle.lethal_jetpack.jetpack.explosion"

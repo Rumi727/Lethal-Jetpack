@@ -28,18 +28,6 @@ public abstract class JetpackCameraMixin implements ICameraJetpack
     @Shadow @Final private Vector3f diagonalPlane;
     @Shadow @Final private Quaternionf rotation;
 
-    @Shadow protected abstract void setPos(Vec3d pos);
-
-    @Shadow private Vec3d pos;
-
-    @Shadow protected abstract void moveBy(float x, float y, float z);
-
-    @Shadow private float pitch;
-    @Shadow private BlockView area;
-    @Shadow private Entity focusedEntity;
-
-    @Shadow protected abstract float clipToSpace(float desiredCameraDistance);
-
     @Shadow @Final private static Vector3f HORIZONTAL;
     @Shadow @Final private static Vector3f VERTICAL;
     @Shadow @Final private static Vector3f DIAGONAL;
@@ -49,7 +37,6 @@ public abstract class JetpackCameraMixin implements ICameraJetpack
     @Unique float lerp = 0;
 
     @Unique boolean inverseView = false;
-    public boolean getInverseView() { return inverseView; }
 
     @Unique float waveMul = 0;
     public float getWaveMul() { return waveMul; }

@@ -13,6 +13,7 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.util.math.MathHelper;
 import org.joml.Quaternionf;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -21,6 +22,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(value = PlayerEntity.class, priority = 2000)
 public abstract class JetpackPlayerMixin implements IPlayerJetpack
 {
+    @Shadow public abstract boolean isMainPlayer();
+
     @Inject(method = "jump", at = @At("TAIL"))
     void jump(CallbackInfo ci)
     {
@@ -59,13 +62,23 @@ public abstract class JetpackPlayerMixin implements IPlayerJetpack
 
         MinecraftClient client = MinecraftClient.getInstance();
         LivingEntity entity = (LivingEntity)(Object)this;
-        JetpackSounds use = new JetpackSounds(entity, ModSounds.JETPACK_USE, SoundCategory.PLAYERS, 0.4f, false);
+
+        JetpackSounds use;
+        if (isMainPlayer())
+            use = new JetpackSounds(entity, ModSounds.JETPACK_USE, SoundCategory.PLAYERS, 0.4f, false);
+        else
+            use = new JetpackSounds(entity, ModSounds.JETPACK_USE_MONO, SoundCategory.PLAYERS, 0.6f, false);
+
         client.getSoundManager().play(use);
 
         if (idle != null)
             client.getSoundManager().stop(idle);
 
-        idle = new JetpackSounds(entity, ModSounds.JETPACK_IDLE, SoundCategory.PLAYERS, 0.4f, false);
+        if (isMainPlayer())
+            idle = new JetpackSounds(entity, ModSounds.JETPACK_IDLE, SoundCategory.PLAYERS, 0.4f, false);
+        else
+            idle = new JetpackSounds(entity, ModSounds.JETPACK_IDLE_MONO, SoundCategory.PLAYERS, 0.6f, false);
+
         client.getSoundManager().play(idle);
 
         if (isCamera())

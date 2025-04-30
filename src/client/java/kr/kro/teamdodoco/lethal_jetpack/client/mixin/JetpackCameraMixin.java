@@ -86,7 +86,7 @@ public abstract class JetpackCameraMixin implements ICameraJetpack
             waveMul = 0;
     }
 
-    @Redirect(method = "update", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/Camera;moveBy(FFF)V"))
+    /*@Redirect(method = "update", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/Camera;moveBy(FFF)V"))
     void updateMoveBy(Camera instance, float x, float y, float z)
     {
         Vec3d pos = this.pos;
@@ -117,12 +117,23 @@ public abstract class JetpackCameraMixin implements ICameraJetpack
         Vector3d dir = lerpRotation.transformInverse(x, y, z, new Vector3d());
 
         return new Vec3d(dir.x, -dir.y, dir.z);
-    }
+    }*/
 
-    @Inject(method = "update", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/Camera;setRotation(FF)V", ordinal = 0, shift = At.Shift.AFTER))
-    void updateRotation(BlockView area, Entity focusedEntity, boolean thirdPerson, boolean inverseView, float tickDelta, CallbackInfo ci)
+    @Inject(method = "setRotation", at = @At("RETURN"))
+    void updateRotation(float yaw, float pitch, CallbackInfo ci)
     {
-        this.rotation.slerp(lerpRotation, lerp);
+        float offsetYaw = (float)Math.PI;
+        if (inverseView)
+            offsetYaw = 0;
+
+        Quaternionf resultRotation = new Quaternionf(lerpRotation);
+        if (inverseView)
+        {
+            Vector3f euler = resultRotation.getEulerAnglesZXY(new Vector3f());
+            resultRotation.rotateLocalX(-euler.x * 2);
+        }
+
+        this.rotation.slerp(resultRotation.rotateLocalX((float)Math.toRadians(pitch)).conjugate().rotateLocalY(offsetYaw), lerp);
 
         HORIZONTAL.rotate(this.rotation, this.horizontalPlane);
         VERTICAL.rotate(this.rotation, this.verticalPlane);

@@ -35,8 +35,8 @@ public abstract class JetpackGameRendererMixin
 
     @Unique Random waveRandom = Random.create();
 
-    @ModifyVariable(method = "renderWorld", at = @At(value = "STORE"))
-    Matrix4f renderWorld(Matrix4f matrices)
+    @ModifyVariable(method = "renderWorld", at = @At(value = "STORE"), ordinal = 1)
+    Matrix4f renderWorld(Matrix4f matrix4f2)
     {
         Quaternionf rotation = new Quaternionf();
         boolean using = false;
@@ -55,36 +55,24 @@ public abstract class JetpackGameRendererMixin
         lerpRotation = lerpRotation.slerp(rotation, 8 * LethalJetpackClient.deltaTime);
 
         float headPitch = (float)Math.toRadians(this.client.gameRenderer.getCamera().getPitch());
-        float offsetYaw = 0;
         float waveMul = 0;
         if (camera instanceof ICameraJetpack cameraJetpack)
-        {
-            if (cameraJetpack.getInverseView())
-                offsetYaw = (float) Math.PI;
-
             waveMul = cameraJetpack.getWaveMul();
-        }
 
-        matrices.translate((waveRandom.nextFloat() * 2 - 1) * waveMul, (waveRandom.nextFloat() * 2 - 1) * waveMul, 0);
+        matrix4f2.translate((waveRandom.nextFloat() * 2 - 1) * waveMul, (waveRandom.nextFloat() * 2 - 1) * waveMul, 0);
 
-        if (using)
+        /*if (using)
         {
             lerp = 0;
-            matrices.rotate(lerpRotation.rotateLocalY(offsetYaw, new Quaternionf()).rotateLocalX(headPitch));
+            matrix4f2.rotateLocalX(headPitch);
         }
         else
         {
             lerp = MathHelper.lerp(8 * LethalJetpackClient.deltaTime, lerp, 1);
             if (lerp < 0.9995f)
-                matrices.rotate(lerpRotation.rotateLocalY(offsetYaw * (1 - lerp), new Quaternionf()).rotateLocalX(headPitch * (1 - lerp)));
-        }
+                matrix4f2.rotateLocalX(headPitch * (1 - lerp));
+        }*/
 
-        return matrices;
+        return matrix4f2;
     }
-
-    /*@Redirect(method = "renderWorld", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/Camera;getPitch()F"))
-    float getPitch(Camera instance) { return instance.getPitch() * lerp; }
-
-    @Redirect(method = "renderWorld", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/Camera;getYaw()F"))
-    float getYaw(Camera instance) { return instance.getYaw() * lerp; }*/
 }

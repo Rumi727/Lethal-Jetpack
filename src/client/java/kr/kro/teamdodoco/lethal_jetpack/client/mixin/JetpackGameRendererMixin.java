@@ -54,7 +54,6 @@ public abstract class JetpackGameRendererMixin
 
         lerpRotation = lerpRotation.slerp(rotation, 8 * LethalJetpackClient.deltaTime);
 
-        float headPitch = (float)Math.toRadians(this.client.gameRenderer.getCamera().getPitch());
         float waveMul = 0;
         if (camera instanceof ICameraJetpack cameraJetpack)
             waveMul = cameraJetpack.getWaveMul();
